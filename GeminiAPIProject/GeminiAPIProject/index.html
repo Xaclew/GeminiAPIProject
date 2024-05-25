@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+</script>
+
+      
+<script type="module">
+  import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+  const onSuccess = (position) => {
+  const latitude = position.coords.latitude;
+  const longitude = position.coords.longitude;
+  console.log("Latitude:", latitude);
+  console.log("Longitude:", longitude);
+
+ 
+  let lat = latitude;
+  let lon = longitude;
+
+
+
+
+
+
+const apiKey = '6fcba5f699cf49c8893191331242305';
+const baseUrl = `http://api.weatherapi.com/v1/current.json`;
+
+const url = `${baseUrl}?key=${apiKey}&q=${lat},${lon}`;
+
+fetch(url)
+.then(response => response.json())
+.then(data1 => {
+    console.log("API response:", data1);
+    
+
+
+        // Now make the second API call
+        fetch("https://api.nytimes.com/svc/topstories/v2/world.json?api-key=dYPWJfcUGz7jzoqT3m4NJ73IJiZd36RQ")
+      .then(response => response.json())
+      .then(data2 => {
+        // Combine the data
+        console.log(data2);
+        const combinedData = JSON.stringify({ ...data1, ...data2 });
+        console.log(combinedData);
+
+
+
+
+
+
+        // Make the final API call
+
+        const API_KEY = "AIzaSyCqNqpzqcq-D8zPpEl_uL2KYs_Et8C7Trg";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        async function run() {
+        // For text-only input, use the gemini-pro model
+        const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+        const prompt = `Write a single haiku about both the weather AND the top stories, based on this string: ${combinedData}. Limit the haiku to the five-seven-five syllable format. Be sure to integrate aspects from both the weather and the news in the haiku.`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        console.log(text);
+        }
+
+        run();
+      })
+      .catch(error => {
+        console.error("Error fetching data2:", error);
+      });
+
+
+  })
+  .catch(error => {
+    console.error("Error fetching data1:", error);
+  });
+
+
+};
+
+const onError = (error) => {
+  console.error("Error getting location:", error);
+};
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(onSuccess, onError);
+} else {
+  console.warn("Geolocation is not supported by this browser.");
+}
+
+
+
+
+
+
+
+
+        
+
+
+
+
+            
+
+
+
+
+
+
+
+
+
+            
+
+
+      </script>
+<button id="generate">Generate!</button>    
+</body>
+</html>
