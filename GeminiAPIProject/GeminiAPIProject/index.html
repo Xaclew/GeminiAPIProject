@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
+<body id="haiku-container">
+
+
+<img src=""/>  
+<button id="generate">Generate!</button>
 
 <script type="importmap">
         {
@@ -18,6 +22,14 @@
       
 <script type="module">
   import { GoogleGenerativeAI } from "@google/generative-ai";
+  const button = document.getElementById("generate");
+
+  button.addEventListener("click", handleClick);
+
+  function handleClick() {
+
+    
+  
 
 
   const onSuccess = (position) => {
@@ -52,8 +64,12 @@ fetch(url)
       .then(response => response.json())
       .then(data2 => {
         // Combine the data
-        console.log(data2);
-        const combinedData = JSON.stringify({ ...data1, ...data2 });
+        const randomNumber = Math.floor(Math.random() * (data2.results.length + 1));
+        const selectedArticle = data2.results[randomNumber];
+        const imageURL = selectedArticle.multimedia[0].url;
+        console.log(randomNumber);
+        console.log(data2.results[randomNumber]);
+        const combinedData = JSON.stringify({ ...data1, ...data2.results[randomNumber].abstract });
         console.log(combinedData);
 
 
@@ -76,6 +92,18 @@ fetch(url)
         const response = await result.response;
         const text = response.text();
         console.log(text);
+
+        const haikuContainer = document.getElementById("haiku-container");
+
+        if (haikuContainer) {
+          // Update the innerHTML with your desired content
+          haikuContainer.innerHTML = `
+            <img src=${imageURL} alt="Haiku image">
+            <p>${text}</p>
+          `;
+        } else {
+          console.error("Element with id 'haiku-container' not found.");
+        }
         }
 
         run();
@@ -103,6 +131,7 @@ if (navigator.geolocation) {
   console.warn("Geolocation is not supported by this browser.");
 }
 
+  }
 
 
 
@@ -110,7 +139,7 @@ if (navigator.geolocation) {
 
 
 
-        
+       
 
 
 
@@ -129,6 +158,6 @@ if (navigator.geolocation) {
 
 
       </script>
-<button id="generate">Generate!</button>    
+    
 </body>
 </html>
